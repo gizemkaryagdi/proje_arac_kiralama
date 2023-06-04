@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php
+@session_start();
 include('baglan.php');
-$sorgu = mysqli_query($conn,"select * from araclar");
+$sorgu = mysqli_query($conn,"select * from araclar where arac_durum=0");
 $say = mysqli_num_rows($sorgu);
 ?>
 <html>
@@ -50,21 +51,36 @@ $say = mysqli_num_rows($sorgu);
                 </button>
                 <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
                     <div class="navbar-nav ml-auto py-0">
-                        <a href="index.php" class="nav-item nav-link">Anasayfa</a>
                         <a href="hakkimizda.php" class="nav-item nav-link">Hakkımızda</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle active" data-toggle="dropdown">Araç</a>
                             <div class="dropdown-menu rounded-0 m-0">
                                 <a href="arac.php" class="dropdown-item">Araçlar</a>
                                 <a href="marka.php" class="dropdown-item">Markalar</a>
-                                <!--<a href="arac_listele" class="dropdown-item">Araç Listele</a>-->
-                                <!--<a href="rezervasyon.php" class="dropdown-item">Rezervasyon</a>-->
-
                             </div>
                         </div>
                         <a href="iletisim.php" class="nav-item nav-link">İletişim</a>
                     </div>
                 </div>
+                <form class="form-inline my-2 my-lg-0 ml-0 ml-lg-4 mb-3 mb-lg-0">
+              <?php
+               if ( !isset($_SESSION["musteri_id"]) ) {
+                echo"<a href='giris_detay.php'><img src='img/giris.svg' width='28'></a>";
+            } else {
+                echo"<div class='navbar-nav ml-auto py-0'>";
+                    $sorgu1 = mysqli_query($conn,"Select * from musteriler where musteri_id='{$_SESSION['musteri_id']}'");
+                    $satir1 = mysqli_fetch_array($sorgu1);
+                    echo "<div class='nav-item dropdown'>";
+                    echo "<a href='profil.php' class='nav-link dropdown-toggle' data-toggle='dropdown' >".$satir1['musteri_ad']." ".$satir1['musteri_soyad']."</a>";
+                   
+                        echo "<div class='dropdown-menu rounded-0 m-0'>";
+                            echo"<a href='cikis.php' class='dropdown-item'>Çıkış Yap</a>";
+                    echo"</div>";
+                    echo"</div> ";   
+                  echo"</div>";
+              }  
+              ?>
+              </form>
             </nav>
         </div>
     </div>
@@ -78,17 +94,15 @@ $say = mysqli_num_rows($sorgu);
         </div>
     </div>
     <div class="nav-item dropdown">
-        <!-- <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Araç</a> -->
         <div class="dropdown-menu rounded-0 m-0">
             <a href="arac_listele.php" class="dropdown-item">Araç Listele</a>
-            <!--<a href="rezervasyon.php" class="dropdown-item">Rezervasyon</a>-->
             <a href="arac.php" class="dropdown-item">Araçlar</a>
             <a href="marka.php" class="dropdown-item">Markalar</a>
         </div>
     </div>
     
-    <!-- Rent A Car Start -->
-    <!-- sorgu baslangic -->
+<!-- sorgu baslangic -->
+
     <div class="container-fluid py-5">
         <div class="container pt-5 pb-3">
             <div class="row">
@@ -112,7 +126,7 @@ if ( $say > 0 ) {
                     </div>
                 
                     </div>
-                <a class="btn btn-primary px-3" onclick="alert('Kiralama kısmı 2. dönem eklenecektir.')" ><?php echo "Günlük ".$satir['arac_kira_ucreti']."₺"; ?></a>
+                <a href= "rezervasyon.php?arac_id=<?php echo @$satir['arac_id']?>" class="btn btn-primary px-3" ><?php echo "Günlük ".$satir['arac_kira_ucreti']."₺"; ?></a>
             </div>
         </div>
         <?php
@@ -121,10 +135,10 @@ if ( $say > 0 ) {
 </div>
 </div>
 </div>
-    <!-- sorgu bitis -->
 
-    
-    <?php
+<!-- sorgu bitis -->
+
+<?php
     echo "<div class='container-fluid py-5'>";
     echo "<div class='container pt-5 pb-3'>";           
     echo "<div 'class='row'>";
@@ -151,8 +165,7 @@ if ( $say > 0 ) {
                 }
             echo "</div>";           
             echo "</div>";
-            echo "</div>";
-    //<!-- Rent A Car End --> 
+            echo "</div>"; 
 }
 ?>
 <!-- Back to Top -->
